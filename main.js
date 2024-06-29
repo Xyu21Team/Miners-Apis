@@ -1,39 +1,64 @@
 __path = process.cwd()
 
-
-
+var { performance } = require('perf_hooks');
+var fetch = require('node-fetch');
 var express = require('express');
-
 var router = express.Router();
 
-
-
-router.get('/', async(req, res) => {
-
-	res.sendFile(__path + '/views/home.html')
-
+router.get('/', (req, res) => {
+    res.sendFile(__path + '/views/home.html')
 })
 
-router.get('/css/style.css', async(req, res) => {
-
-	res.sendFile(__path + '/views/css/style.css')
-
+router.get('/api', (req, res) => {
+    res.sendFile(__path + '/views/index.html')
 })
 
+router.get('/api/game', (req, res) => {
+    res.sendFile(__path + '/views/game.html')
+})
 
+router.get('/api/tutorial', (req, res) => {
+    res.sendFile(__path + '/views/tutorial.html')
+})
 
-//Kalo page yang di cari engga ada, nanti muncul ini:v
+router.get('/api/status', async(req, res) => {  
 
-router.use(function (req, res) {
-
-res.status(404)
-
-.sendFile(__path + '/views/home2.html')
-
-});
-
-
-
-
+var date = new Date
+var jam = date.getHours()
+var menit = date.getMinutes()
+var detik = date.getSeconds()
+var old = performance.now()
+var neww = performance.now()
+var ram = `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${Math.round(require('os').totalmem / 1024 / 1024)}MB`
+var cpu = require('os').cpus()
+var json = await (await fetch('https://api.ipify.org/?format=json')).json()
+var port = process.env.PORT || 8080 || 5000 || 3000 
+    status = {
+        status: 'online',
+        memory: ram,
+        cpu: cpu[0].model,
+        port: port,
+        ip: json.ip,
+        time: `${jam} : ${menit} : ${detik}`,
+        uptime: muptime(process.uptime()),
+        speed: `${neww - old}ms`,
+        info:{       
+            owner: 'Kira-Master',            
+            apikey: 'Chat Owner: https://wa.me/6282135278036'
+        }
+    }
+    res.json(status)
+})
 
 module.exports = router
+
+function muptime(seconds){
+  function pad(s){
+    return (s < 10 ? '0' : '') + s;
+  }
+  var hours = Math.floor(seconds / (60*60));
+  var minutes = Math.floor(seconds % (60*60) / 60);
+  var seconds = Math.floor(seconds % 60);
+
+  return pad(hours) + ' : ' + pad(minutes) + ' : ' + pad(seconds)
+}
