@@ -28,7 +28,7 @@ router.use(function (req, res) {
 
 res.status(404)
 
-.sendFile(__path + '/views/404.html')
+.sendFile(__path + '/views/home2.html')
 
 });
 
